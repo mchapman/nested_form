@@ -1,15 +1,31 @@
 module NestedForm
   class Builder < ::ActionView::Helpers::FormBuilder
     def link_to_add(name, association)
-      @fields ||= {}
-      @template.after_nested_form(association) do
-        model_object = object.class.reflect_on_association(association).klass.new
-        output = %Q[<div id="#{association}_fields_blueprint" style="display: none">].html_safe
+
+      def build_section(association, type, model_object)
+        output = %Q[<div id="#{association}_fields_#{type}_blueprint" style="display: none">].html_safe
         output << fields_for(association, model_object, :child_index => "new_#{association}", &@fields[association])
         output.safe_concat('</div>')
         output
       end
+
+      @fields ||= {}
+      @template.after_nested_form(association) do
+        model_object = object.class.reflect_on_association(association).klass.new
+        joint_output = build_section(association,'edit',model_object)
+        model_object.id = 1
+        joint_output << build_section(association,'view',model_object)
+        joint_output
+      end
       @template.link_to(name, "javascript:void(0)", :class => "add_nested_fields", "data-association" => association)
+    end
+
+    def link_to_stash(name, association)
+      @template.link_to(name, "javascript:void(0)", :class => "stash_nested_fields", "data-association" => association)
+    end
+
+    def link_to_cancel(name, association)
+      @template.link_to(name, "javascript:void(0)", :class => "cancel_nested_fields", "data-association" => association)
     end
 
     def link_to_remove(name)
