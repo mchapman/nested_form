@@ -12,8 +12,9 @@ module NestedForm
       @fields ||= {}
       @template.after_nested_form(association) do
         model_object = object.class.reflect_on_association(association).klass.new
+        model_object.blueprint= :edit
         joint_output = build_section(association,'edit',model_object)
-        model_object.id = 1
+        model_object.blueprint= :view
         joint_output << build_section(association,'view',model_object)
         joint_output
       end
