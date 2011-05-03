@@ -33,6 +33,10 @@ module NestedForm
       hidden_field(:_destroy) + @template.link_to(name, "javascript:void(0)", :class => "remove_nested_fields", "data-association" => association)
     end
 
+    def link_to_edit(name, association)
+      @template.link_to(name, "javascript:void(0)", :class => "edit_nested_fields", "data-association" => association)
+    end
+
     def fields_for_with_nested_attributes(association, args, block)
       @fields ||= {}
       @fields[association] = block
